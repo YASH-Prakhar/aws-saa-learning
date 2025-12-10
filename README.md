@@ -215,11 +215,26 @@ netlify deploy --prod --dir=dist
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/new-feature`
-3. Commit your changes: `git commit -m 'Add new feature'`
-4. Push to the branch: `git push origin feature/new-feature`
-5. Open a Pull Request
+1. Fork the repo on GitHub
+
+2. Clone their fork
+git clone https://github.com/THEIR_USERNAME/aws-saa-learning.git
+cd aws-saa-learning
+
+3. Add your repo as upstream
+git remote add upstream https://github.com/YOUR_USERNAME/aws-saa-learning.git
+
+4. Create a feature branch
+git checkout -b feature/add-dynamodb
+
+5. Make changes, commit
+git add .
+git commit -m "feat: add DynamoDB service"
+
+6. Push to their fork
+git push origin feature/add-dynamodb
+
+7. Open a Pull Request on GitHub to my main branch
 
 ## 📄 License
 
