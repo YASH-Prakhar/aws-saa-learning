@@ -5,7 +5,7 @@ import {
   RefreshCw, ChevronRight, TrendingUp, Award, Calendar
 } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
-import { services, categories } from '../data/services';
+import { servicesByCategory, categories } from '../data/services';
 
 export default function Progress() {
   const { 
@@ -18,8 +18,10 @@ export default function Progress() {
   const serviceProgress = getServiceProgress();
   const quizStats = getQuizStats();
 
+  // Flatten all services from servicesByCategory
+  const allServices = Object.values(servicesByCategory).flat();
   const categoryProgress = categories.map(cat => {
-    const categoryServices = services.filter(s => s.category === cat.id);
+    const categoryServices = allServices.filter(s => s.category === cat.id);
     const completed = categoryServices.filter(s => 
       progress.completedServices.includes(s.id)
     ).length;
@@ -33,7 +35,7 @@ export default function Progress() {
     };
   });
 
-  const totalServices = services.length;
+  const totalServices = allServices.length;
   const completedServices = progress.completedServices.length;
   const overallPercentage = Math.round((completedServices / totalServices) * 100);
 
