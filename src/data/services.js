@@ -16,6 +16,28 @@ import { billingCostManagementServices } from './aws-billing-cost-management';
 import { monitoringServices } from './aws-monitoring';
 import { managementConsoleServices } from './aws-management-console';
 
+// Generate a categories list from the keys in `servicesByCategory`.
+// Provide friendly display names for UI.
+const categoryDisplayNames = {
+  compute: 'Compute',
+  containers: 'Containers',
+  storage: 'Storage',
+  database: 'Database',
+  networking: 'Networking',
+  security: 'Security',
+  cryptography: 'Cryptography & PKI',
+  management: 'Management & Governance',
+  managementExtended: 'Management (Extended)',
+  applicationIntegration: 'Application Integration',
+  developerTools: 'Developer Tools',
+  migrationTransfer: 'Migration & Transfer',
+  frontEndWebMobile: 'Front-end & Mobile',
+  billingCostManagement: 'Billing & Cost Management',
+  monitoring: 'Monitoring & Observability',
+  managementConsole: 'Management Console',
+  analytics: 'Analytics',
+};
+
 export const categories = [
   { id: 'compute', name: 'Compute', icon: 'Server', color: 'orange' },
   { id: 'storage', name: 'Storage', icon: 'HardDrive', color: 'blue' },
