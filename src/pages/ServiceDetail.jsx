@@ -4,7 +4,7 @@ import {
   ArrowLeft, Check, X, BookOpen, Lightbulb, Target, 
   Link as LinkIcon, ChevronRight, ExternalLink
 } from 'lucide-react';
-import { servicesByCategory, categories } from '../data/services';
+import { servicesByCategory, categories, services } from '../data/services';
 import { useProgress } from '../context/ProgressContext';
 
 export default function ServiceDetail() {
@@ -12,7 +12,8 @@ export default function ServiceDetail() {
   const navigate = useNavigate();
   const { progress, markServiceComplete, markServiceIncomplete } = useProgress();
   
-  const allServices = Object.values(servicesByCategory).flat();
+  // prefer the flattened `services` list which includes normalized category and fields
+  const allServices = services;
   const service = allServices.find(s => s.id === id);
   
   if (!service) {

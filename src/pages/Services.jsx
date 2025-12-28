@@ -42,8 +42,8 @@ export default function Services() {
   const [showFilters, setShowFilters] = useState(false);
   const { progress, markServiceComplete, markServiceIncomplete } = useProgress();
 
-  // Flatten all services from servicesByCategory
-  const allServices = Object.values(servicesByCategory).flat();
+  // Use the flattened `services` array (normalized categories)
+  const allServices = services;
   const filteredServices = useMemo(() => {
     return allServices.filter(service => {
       const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
