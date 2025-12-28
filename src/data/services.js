@@ -47,7 +47,33 @@ export const servicesByCategory = {
 };
 
 // Flatten services for legacy imports and derived data
-export const services = Object.values(servicesByCategory).flat();
+// Map serviceByCategory keys to the main category ids used in the UI
+const categoryKeyToCategoryId = {
+  compute: 'compute',
+  containers: 'compute',
+  storage: 'storage',
+  database: 'database',
+  networking: 'networking',
+  security: 'security',
+  cryptography: 'security',
+  management: 'management',
+  managementExtended: 'management',
+  applicationIntegration: 'integration',
+  developerTools: 'management',
+  migrationTransfer: 'management',
+  frontEndWebMobile: 'compute',
+  billingCostManagement: 'management',
+  monitoring: 'management',
+  managementConsole: 'management',
+};
+
+export const services = Object.entries(servicesByCategory).flatMap(([key, arr]) =>
+  (arr || []).map(s => ({
+    // keep existing fields but ensure a `category` is present and normalized
+    ...s,
+    category: s.category || categoryKeyToCategoryId[key] || 'management',
+  }))
+);
 
 // Flashcards derived from services
 export const flashcards = services.map(s => ({
