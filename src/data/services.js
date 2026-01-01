@@ -8,7 +8,6 @@ import { cryptographyServices } from './services/aws-cryptography';
 import { managementServices } from './services/aws-management';
 import { networkingServices } from './services/aws-networking';
 import { applicationIntegrationServices } from './services/aws-application-integration';
-import { managementExtendedServices } from './services/aws-management-extended';
 import { developerToolsServices } from './services/aws-developer-tools';
 import { migrationTransferServices } from './services/aws-migration-transfer';
 import { frontEndWebMobileServices } from './services/aws-front-end-web-mobile';
@@ -29,9 +28,9 @@ export const servicesByCategory = {
   security: securityServices,
   cryptography: cryptographyServices,
   management: managementServices,
+  managementConsoleServices: managementConsoleServices,
   networking: networkingServices,
   applicationIntegration: applicationIntegrationServices,
-  managementExtended: managementExtendedServices,
   developerTools: developerToolsServices,
   migrationTransfer: migrationTransferServices,
   frontEndWebMobile: frontEndWebMobileServices,
@@ -49,14 +48,13 @@ const categoryDisplayNames = {
   security: 'Security',
   cryptography: 'Cryptography & PKI',
   management: 'Management & Governance',
-  managementExtended: 'Management (Extended)',
   applicationIntegration: 'Application Integration',
   developerTools: 'Developer Tools',
   migrationTransfer: 'Migration & Transfer',
   frontEndWebMobile: 'Front-end & Mobile',
   billingCostManagement: 'Billing & Cost Management',
   monitoring: 'Monitoring & Observability',
-  managementConsole: 'Management Console',
+  managementConsoleServices: 'Management Console',
 };
 
 export const categories = Object.keys(servicesByCategory).map(key => ({
@@ -67,21 +65,20 @@ export const categories = Object.keys(servicesByCategory).map(key => ({
 // Flatten services for legacy imports and derived data
 const categoryKeyToCategoryId = {
   compute: 'compute',
-  containers: 'compute',
+  containers: 'containers',
   storage: 'storage',
   database: 'database',
   networking: 'networking',
   security: 'security',
-  cryptography: 'security',
+  cryptography: 'cryptography',
   management: 'management',
-  managementExtended: 'management',
-  applicationIntegration: 'integration',
-  developerTools: 'management',
-  migrationTransfer: 'management',
-  frontEndWebMobile: 'compute',
-  billingCostManagement: 'management',
-  monitoring: 'management',
-  managementConsole: 'management',
+  applicationIntegration: 'applicationIntegration',
+  developerTools: 'developerTools',
+  migrationTransfer: 'migrationTransfer',
+  frontEndWebMobile: 'frontEndWebMobile',
+  billingCostManagement: 'billingCostManagement',
+  monitoring: 'monitoring',
+  managementConsoleServices: 'managementConsoleServices',
 };
 
 export const services = Object.entries(servicesByCategory).flatMap(([key, arr]) =>
