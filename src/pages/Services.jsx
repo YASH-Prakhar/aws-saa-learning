@@ -6,7 +6,7 @@ import {
   Server, HardDrive, Database, Network, Shield, Settings, 
   Link as LinkIcon, BarChart, X
 } from 'lucide-react';
-import { services, categories } from '../data/services';
+import { servicesByCategory, categories, services } from '../data/services';
 import { useProgress } from '../context/ProgressContext';
 
 const categoryIcons = {
@@ -42,10 +42,12 @@ export default function Services() {
   const [showFilters, setShowFilters] = useState(false);
   const { progress, markServiceComplete, markServiceIncomplete } = useProgress();
 
+  // Use the flattened `services` array (normalized categories)
+  const allServices = services;
   const filteredServices = useMemo(() => {
-    return services.filter(service => {
+    return allServices.filter(service => {
       const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           service.description.toLowerCase().includes(searchQuery.toLowerCase());
+                           (service.description?.toLowerCase().includes(searchQuery.toLowerCase()) || service.details?.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesCategory = selectedCategory === 'all' || service.category === selectedCategory;
       const matchesDifficulty = selectedDifficulty === 'all' || service.difficulty === selectedDifficulty;
       return matchesSearch && matchesCategory && matchesDifficulty;
@@ -239,7 +241,7 @@ export default function Services() {
                           {service.name}
                         </h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
-                          {service.description}
+                          {service.description || service.details || service.fullDescription}
                         </p>
                       </div>
                     </div>
@@ -275,7 +277,7 @@ export default function Services() {
                         {service.name}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                        {service.description}
+                        {service.description || service.details || service.fullDescription}
                       </p>
                     </div>
                     <span className={`px-2 py-1 rounded text-xs font-medium hidden sm:block ${

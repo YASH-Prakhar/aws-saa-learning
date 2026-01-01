@@ -6,7 +6,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useProgress } from '../context/ProgressContext';
-import { services, categories } from '../data/services';
+import { services, categories, servicesByCategory } from '../data/services';
 
 const container = {
   hidden: { opacity: 0 },
@@ -242,7 +242,7 @@ export default function Home() {
             className="grid grid-cols-2 md:grid-cols-4 gap-4"
           >
             {categories.map((category, i) => {
-              const categoryServices = services.filter(s => s.category === category.id);
+              const categoryServices = servicesByCategory[category.id] || [];
               return (
                 <motion.div key={category.id} variants={item}>
                   <Link

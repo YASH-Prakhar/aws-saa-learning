@@ -18,8 +18,10 @@ export default function Progress() {
   const serviceProgress = getServiceProgress();
   const quizStats = getQuizStats();
 
+  // Use flattened `services` array from the data module
+  const allServices = services;
   const categoryProgress = categories.map(cat => {
-    const categoryServices = services.filter(s => s.category === cat.id);
+    const categoryServices = allServices.filter(s => s.category === cat.id);
     const completed = categoryServices.filter(s => 
       progress.completedServices.includes(s.id)
     ).length;
@@ -33,9 +35,9 @@ export default function Progress() {
     };
   });
 
-  const totalServices = services.length;
+  const totalServices = allServices.length;
   const completedServices = progress.completedServices.length;
-  const overallPercentage = Math.round((completedServices / totalServices) * 100);
+  const overallPercentage = totalServices > 0 ? Math.round((completedServices / totalServices) * 100) : 0;
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">

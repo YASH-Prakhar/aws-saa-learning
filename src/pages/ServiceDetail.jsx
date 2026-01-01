@@ -4,7 +4,7 @@ import {
   ArrowLeft, Check, X, BookOpen, Lightbulb, Target, 
   Link as LinkIcon, ChevronRight, ExternalLink
 } from 'lucide-react';
-import { services, categories } from '../data/services';
+import { servicesByCategory, categories, services } from '../data/services';
 import { useProgress } from '../context/ProgressContext';
 
 export default function ServiceDetail() {
@@ -12,7 +12,9 @@ export default function ServiceDetail() {
   const navigate = useNavigate();
   const { progress, markServiceComplete, markServiceIncomplete } = useProgress();
   
-  const service = services.find(s => s.id === id);
+  // prefer the flattened `services` list which includes normalized category and fields
+  const allServices = services;
+  const service = allServices.find(s => s.id === id);
   
   if (!service) {
     return (
@@ -30,8 +32,17 @@ export default function ServiceDetail() {
   const category = categories.find(c => c.id === service.category);
   const isCompleted = progress.completedServices.includes(service.id);
   const relatedServices = service.relatedServices
-    ?.map(id => services.find(s => s.id === id))
+    ?.map(relId => allServices.find(s => s.id === relId))
     .filter(Boolean) || [];
+
+  // Normalize fields across different data modules
+  const description = service.description || service.details || '';
+  const fullDescription = service.fullDescription || service.details || service.description || '';
+  const keyPoints = service.keyPoints || service.bestPractices || [];
+  const useCases = service.useCases || [];
+  const examTips = service.examTips || (Array.isArray(service.examNotes) ? service.examNotes.join(' ') : service.examNotes) || '';
+  const shortName = service.shortName || service.short || service.name;
+  const difficulty = service.difficulty || 'good-to-know';
 
   const handleToggleComplete = () => {
     if (isCompleted) {
@@ -84,9 +95,11 @@ export default function ServiceDetail() {
               <h1 className="text-3xl md:text-4xl font-bold font-display text-slate-900 dark:text-white mb-2">
                 {service.name}
               </h1>
-              <p className="text-lg text-slate-600 dark:text-slate-400">
-                {service.description}
-              </p>
+                {description && (
+                  <p className="text-lg text-slate-600 dark:text-slate-400">
+                    {description}
+                  </p>
+                )}
             </div>
             
             <motion.button
@@ -113,9 +126,11 @@ export default function ServiceDetail() {
             </motion.button>
           </div>
 
-          <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-            {service.fullDescription}
-          </p>
+            {fullDescription && fullDescription !== description && (
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                {fullDescription}
+              </p>
+            )}
         </motion.div>
 
         {/* Key Points */}
@@ -129,22 +144,26 @@ export default function ServiceDetail() {
             <BookOpen className="w-5 h-5 text-aws-orange" />
             Key Points
           </h2>
-          <ul className="space-y-3">
-            {service.keyPoints.map((point, i) => (
-              <motion.li
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 + i * 0.05 }}
-                className="flex items-start gap-3"
-              >
-                <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
-                </div>
-                <span className="text-slate-700 dark:text-slate-300">{point}</span>
-              </motion.li>
-            ))}
-          </ul>
+          {keyPoints.length > 0 ? (
+            <ul className="space-y-3">
+              {keyPoints.map((point, i) => (
+                <motion.li
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 + i * 0.05 }}
+                  className="flex items-start gap-3"
+                >
+                  <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  </div>
+                  <span className="text-slate-700 dark:text-slate-300">{point}</span>
+                </motion.li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-slate-500 dark:text-slate-400">No key points available for this service.</p>
+          )}
         </motion.div>
 
         {/* Use Cases */}
@@ -159,7 +178,7 @@ export default function ServiceDetail() {
             Common Use Cases
           </h2>
           <div className="flex flex-wrap gap-2">
-            {service.useCases.map((useCase, i) => (
+            {useCases.map((useCase, i) => (
               <motion.span
                 key={i}
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -184,9 +203,11 @@ export default function ServiceDetail() {
             <Lightbulb className="w-5 h-5 text-aws-orange" />
             Exam Tips
           </h2>
-          <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-            {service.examTips}
-          </p>
+          {examTips ? (
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed">{examTips}</p>
+          ) : (
+            <p className="text-slate-500 dark:text-slate-400">No exam tips available.</p>
+          )}
         </motion.div>
 
         {/* Related Services */}
