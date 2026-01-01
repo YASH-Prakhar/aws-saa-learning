@@ -1,53 +1,25 @@
 // AWS Services Data - Classification-based imports
-import { computeServices } from './aws-compute';
-import { containerServices } from './aws-containers';
-import { storageServices } from './aws-storage';
-import { databaseServices } from './aws-database';
-import { securityServices } from './aws-security';
-import { cryptographyServices } from './aws-cryptography';
-import { managementServices } from './aws-management';
-import { networkingServices } from './aws-networking';
-import { applicationIntegrationServices } from './aws-application-integration';
-import { managementExtendedServices } from './aws-management-extended';
-import { developerToolsServices } from './aws-developer-tools';
-import { migrationTransferServices } from './aws-migration-transfer';
-import { frontEndWebMobileServices } from './aws-front-end-web-mobile';
-import { billingCostManagementServices } from './aws-billing-cost-management';
-import { monitoringServices } from './aws-monitoring';
-import { managementConsoleServices } from './aws-management-console';
+import { computeServices } from './services/aws-compute';
+import { containerServices } from './services/aws-containers';
+import { storageServices } from './services/aws-storage';
+import { databaseServices } from './services/aws-database';
+import { securityServices } from './services/aws-security';
+import { cryptographyServices } from './services/aws-cryptography';
+import { managementServices } from './services/aws-management';
+import { networkingServices } from './services/aws-networking';
+import { applicationIntegrationServices } from './services/aws-application-integration';
+import { managementExtendedServices } from './services/aws-management-extended';
+import { developerToolsServices } from './services/aws-developer-tools';
+import { migrationTransferServices } from './services/aws-migration-transfer';
+import { frontEndWebMobileServices } from './services/aws-front-end-web-mobile';
+import { billingCostManagementServices } from './services/aws-billing-cost-management';
+import { monitoringServices } from './services/aws-monitoring';
+import { managementConsoleServices } from './services/aws-management-console';
 
-// Generate a categories list from the keys in `servicesByCategory`.
-// Provide friendly display names for UI.
-const categoryDisplayNames = {
-  compute: 'Compute',
-  containers: 'Containers',
-  storage: 'Storage',
-  database: 'Database',
-  networking: 'Networking',
-  security: 'Security',
-  cryptography: 'Cryptography & PKI',
-  management: 'Management & Governance',
-  managementExtended: 'Management (Extended)',
-  applicationIntegration: 'Application Integration',
-  developerTools: 'Developer Tools',
-  migrationTransfer: 'Migration & Transfer',
-  frontEndWebMobile: 'Front-end & Mobile',
-  billingCostManagement: 'Billing & Cost Management',
-  monitoring: 'Monitoring & Observability',
-  managementConsole: 'Management Console',
-  analytics: 'Analytics',
-};
-
-export const categories = [
-  { id: 'compute', name: 'Compute', icon: 'Server', color: 'orange' },
-  { id: 'storage', name: 'Storage', icon: 'HardDrive', color: 'blue' },
-  { id: 'database', name: 'Database', icon: 'Database', color: 'purple' },
-  { id: 'networking', name: 'Networking', icon: 'Network', color: 'green' },
-  { id: 'security', name: 'Security', icon: 'Shield', color: 'red' },
-  { id: 'management', name: 'Management', icon: 'Settings', color: 'slate' },
-  { id: 'integration', name: 'Integration', icon: 'Link', color: 'cyan' },
-  { id: 'analytics', name: 'Analytics', icon: 'BarChart', color: 'indigo' },
-];
+// Import aggregated study materials from index files
+import { flashcards as allFlashcards, flashcardsByCategory } from './flashcards';
+import { quizQuestions as allQuizQuestions, quizzesByCategory } from './quizzes';
+import { matchingPairs as allMatchingPairs, matchingGamesByCategory } from './games';
 
 export const servicesByCategory = {
   compute: computeServices,
@@ -65,11 +37,34 @@ export const servicesByCategory = {
   frontEndWebMobile: frontEndWebMobileServices,
   billingCostManagement: billingCostManagementServices,
   monitoring: monitoringServices,
-  managementConsole: managementConsoleServices,
 };
 
+// Generate categories from servicesByCategory keys with friendly display names
+const categoryDisplayNames = {
+  compute: 'Compute',
+  containers: 'Containers',
+  storage: 'Storage',
+  database: 'Database',
+  networking: 'Networking',
+  security: 'Security',
+  cryptography: 'Cryptography & PKI',
+  management: 'Management & Governance',
+  managementExtended: 'Management (Extended)',
+  applicationIntegration: 'Application Integration',
+  developerTools: 'Developer Tools',
+  migrationTransfer: 'Migration & Transfer',
+  frontEndWebMobile: 'Front-end & Mobile',
+  billingCostManagement: 'Billing & Cost Management',
+  monitoring: 'Monitoring & Observability',
+  managementConsole: 'Management Console',
+};
+
+export const categories = Object.keys(servicesByCategory).map(key => ({
+  id: key,
+  name: categoryDisplayNames[key] || key.replace(/([A-Z])/g, ' $1').trim(),
+}));
+
 // Flatten services for legacy imports and derived data
-// Map serviceByCategory keys to the main category ids used in the UI
 const categoryKeyToCategoryId = {
   compute: 'compute',
   containers: 'compute',
@@ -94,46 +89,23 @@ export const services = Object.entries(servicesByCategory).flatMap(([key, arr]) 
     // keep existing fields but ensure a `category` is present and normalized
     ...s,
     category: s.category || categoryKeyToCategoryId[key] || 'management',
+    // Add default difficulty if not present (derived from examNotes/bestPractices length as heuristic)
+    difficulty: s.difficulty || (s.examNotes && s.examNotes.length > 3 ? 'essential' : 'important'),
+    // Add relatedServices as empty array if not present
+    relatedServices: s.relatedServices || [],
   }))
 );
 
-// Flashcards derived from services
-export const flashcards = services.map(s => ({
-  id: s.id,
-  front: s.name,
-  back: s.description,
-  details: s.examTips || '',
-  category: s.category || 'uncategorized',
-}));
+// Export flashcards from index file
+export const flashcards = allFlashcards;
+export { flashcardsByCategory };
 
-// Matching pairs (term/definition) - use up to first 12 services
-export const matchingPairs = services.slice(0, 12).map(s => ({
-  id: s.id,
-  term: s.shortName || s.name,
-  definition: s.description,
-  pairId: s.id,
-}));
+// Export quiz questions from index file
+export const quizQuestions = allQuizQuestions;
+export { quizzesByCategory };
 
-// Basic quizQuestions placeholder if none exist — keep a few simple questions
-export const quizQuestions = [
-  {
-    id: 1,
-    question: 'Which AWS service provides object storage?',
-    options: ['EBS', 'S3', 'EFS', 'RDS'],
-    correct: 1,
-    explanation: 'Amazon S3 is the object storage service.',
-    category: 'storage',
-    difficulty: 'easy',
-  },
-  {
-    id: 2,
-    question: 'Which service is used for DNS routing?',
-    options: ['VPC', 'CloudFront', 'Route 53', 'ELB'],
-    correct: 2,
-    explanation: 'Amazon Route 53 provides DNS and domain registration services.',
-    category: 'networking',
-    difficulty: 'easy',
-  },
-];
+// Export matching pairs from index file
+export const matchingPairs = allMatchingPairs;
+export { matchingGamesByCategory };
 
 export default services;
